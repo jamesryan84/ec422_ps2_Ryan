@@ -64,4 +64,46 @@ unemp_recent_summary <- unemp_recent |>
     min_rate  = min(unemployment_rate, na.rm = TRUE),
     max_rate  = max(unemployment_rate, na.rm = TRUE),)
 
+unemp_top_increases <- unemp |>
+  slice_max(order_by = unemployment_rate_change, n = 5, with_ties = TRUE)
 
+unemp_top_decreases <- unemp |>
+  slice_min(order_by = unemployment_rate_change, n = 5, with_ties = TRUE)
+
+unemp_top_increases_no_covid <- unemp |>
+  filter(date < as.Date("2020-01-01") | date >= as.Date("2021-01-01")) |>
+  slice_max(order_by = unemployment_rate_change, n = 5, with_ties = TRUE)
+
+unemp_top_decreases_no_covid <- unemp |>
+  filter(date < as.Date("2020-01-01") | date >= as.Date("2021-01-01")) |>
+  slice_min(order_by = unemployment_rate_change, n = 5, with_ties = TRUE)
+
+ggplot(data = unemp, aes(x = date, y = unemployment_rate, color = region)) +
+  geom_line(linewidth = 1) +
+  labs(
+    title = "Unemployment Rate Over Time",
+    x = "Date",
+    y = "Unemployment Rate (%)",
+    color = "Region"
+  ) +
+  theme_minimal()
+
+ggplot(data = unemp, aes(x = date, y = unemployment_rate, color = region)) +
+  geom_line(linewidth = 1) +
+  labs(
+    title = "Unemployment Rate Over Time",
+    x = "Date",
+    y = "Unemployment Rate (%)",
+    color = "Region"
+  ) +
+  theme_minimal() + facet_wrap(~ region)
+
+ggplot(data = unemp_summary, aes(x = fct_reorder(region, mean_rate), y = mean_rate)) +
+  geom_col() +
+  labs(
+    title = "Average Unemployment Rate by Region",
+    x = "Region",
+    y = "Average Unemployment Rate (%)"
+  ) +
+  theme_minimal()
+  
