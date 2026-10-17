@@ -106,4 +106,14 @@ ggplot(data = unemp_summary, aes(x = fct_reorder(region, mean_rate), y = mean_ra
     y = "Average Unemployment Rate (%)"
   ) +
   theme_minimal()
-  
+
+ggplot(unemp, aes(x = region, y = unemployment_rate)) +
+  geom_boxplot() +
+  labs(
+    title = "Unemployment Rate Distribution by Region",
+    x = "Region",
+    y = "Unemployment Rate (%)"
+  ) +
+  coord_flip()
+
+
