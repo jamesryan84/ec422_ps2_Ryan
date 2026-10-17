@@ -1,0 +1,116 @@
+---
+title: "ps2_writeup_Ryan.qmd"
+author: "James Ryan"
+date: today
+format: 
+  html:
+    toc: true
+    embed-resources: true
+---
+
+**GitHub repo:** <https://github.com/jamesryan84/ec422_ps2_Ryan>
+
+##Data
+
+```{r}
+getwd()
+file.exists("ps2_script_Ryan.R")
+file.exists("data/unemp_raw.rds")
+
+library(tidyquant)
+library(tidyverse)
+
+unemp_raw <- tq_get(
+  c("UNRATE", "ORUR", "CAUR", "TXUR", "NYUR"),
+  get = "economic.data",
+  from = "1976-01-01"
+)
+
+head(unemp_raw)
+
+dir.create("data", showWarnings = FALSE)
+
+write_rds(unemp_raw, "data/unemp_raw.rds")
+
+unemp_raw = read_rds("data/unemp_raw.rds")
+
+
+```
+
+##Wrangling
+
+Tables are unemployment rates by region, recent unemployment trneds and the largest unemployment increases and decrease, not counting COVID.
+
+### Unemployment Rate by Region
+
+
+kable(unemp_summary, digits = 2,
+       caption = "Mean unemployment rate by region.")
+
+
+### Recent Unemployment Summary
+
+
+kable(unemp_recent_summary, digits = 2,
+       caption = "Summary of recent unemployment rates.")
+
+
+### Five Largest Unemployment Increases (Excluding COVID)
+
+
+kable(unemp_top_increases_no_covid, digits = 2,
+     caption = "Largest increases in unemployment, excluding 2020.")
+
+
+### Five Largest Unemployment Decreases (Excluding COVID)
+
+###Visualization
+
+###Plot 1: This shows a line graph of the unemployment rate from 1975 to 2026 in every region. The rates go up during major recessions like 2008 and 2020.
+
+
+ggplot(data = unemp, aes(x = date, y = unemployment_rate, color = region)) +
+geom_line(linewidth = 1) +
+labs(
+ title = "Unemployment Rate Over Time",
+x = "Date", y = "Unemployment Rate (%)",  color = "Region") +
+  theme_minimal()
+
+
+###Plot 2: This is a similar graph to the first one except it separates the rates by region.
+
+
+ggplot(data = unemp, aes(x = date, y = unemployment_rate, color = region)) + geom_line(linewidth = 1) + labs( title = "Unemployment Rate Over Time", x = "Date", y = "Unemployment Rate (%)", color = "Region" ) + theme_minimal() + facet_wrap(~ region)
+
+
+###Plot 3: This is a bar graph of the average unemployment reate in percentage by region. California and Oregon have the highest average rates.
+
+ggplot(data = unemp_summary, aes(x = fct_reorder(region, mean_rate), y = mean_rate)) + geom_col() + labs( title = "Average Unemployment Rate by Region", x = "Region", y = "Average Unemployment Rate (%)" ) + theme_minimal()
+
+
+###Plot 4: This was a boxplot ofmy own creation that shows the median, 25 and 75 quartiles and any outliers of unemployment rate by region.
+
+ggplot(unemp, aes(x = region, y = unemployment_rate)) + geom_boxplot() + labs( title = "Unemployment Rate Distribution by Region", x = "Region", y = "Unemployment Rate (%)" ) + coord_flip()
+
+###Reflection I found this second project both easier and harder than I initially anticipated. The actual lines of code I found quite easy, especially due to the starter code provided which I thought was a very good way to ease into it. What I found difficult was publishing my results to Github and figuring out the Quarto document, so basically everything that is not involved with R itself. I feel much more comfortable with graphing into ggplot2 as well and found the customization infteresting. I now feel more confident with basic data composition and mutation. ---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
